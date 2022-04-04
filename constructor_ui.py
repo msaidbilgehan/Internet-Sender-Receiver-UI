@@ -163,6 +163,10 @@ class Ui_ISR(Structure_Ui_Camera):
         self.pushButton_Sender_Stop_Action.clicked.connect(
             self.stop_Sender_Internet_Object
         )
+        self.pushButton_Sender_Buffer_Clear.clicked.connect(
+            lambda: self.internet_Sender_Dict[self.internet_Sender_Node].buffer_Clear() 
+                if self.internet_Sender_Node is not None else None
+        )
         
         self.pushButton_Receiver_Start_Action.clicked.connect(
             lambda: [
@@ -201,6 +205,10 @@ class Ui_ISR(Structure_Ui_Camera):
                 )
             )
         )
+        self.pushButton_Receiver_Buffer_Clear.clicked.connect(
+            lambda: self.internet_Receiver_Dict[self.internet_Receiver_Node].buffer_Clear() 
+                if self.internet_Receiver_Node is not None else None
+        )
         # self.pushButton_Send_Snapshot.clicked.connect(
         # )
 
@@ -219,7 +227,7 @@ class Ui_ISR(Structure_Ui_Camera):
                 connection=lambda: self.buffer_Sender_Set(
                     self.textEdit_Sender_Input.toPlainText()
                 ),
-                delay=100,
+                delay=50,
                 is_needed_start=True,
                 is_single_shot=False
             )
@@ -234,7 +242,7 @@ class Ui_ISR(Structure_Ui_Camera):
                 connection=lambda: self.buffer_Sender_Set(
                     self.textEdit_Sender_Input.toPlainText()
                 ),
-                delay=100,
+                delay=50,
                 is_needed_start=True,
                 is_single_shot=False
             )
@@ -279,7 +287,7 @@ class Ui_ISR(Structure_Ui_Camera):
         self.QTimer_Dict["Internet Sender Information"] = qtimer_Create_And_Run(
             self,
             connection=self.event_Sender_Information,
-            delay=500,
+            delay=100,
             is_needed_start=True,
             is_single_shot=False
         )
@@ -287,71 +295,81 @@ class Ui_ISR(Structure_Ui_Camera):
     def stop_Sender_Internet_Object(self):
         if self.internet_Sender_Node is not None:
             self.internet_Sender_Dict[self.internet_Sender_Node].quit()
-            self.QTimer_Dict["Internet Sender Information"].stop(
-            ) if self.QTimer_Dict["Internet Sender Information"].isActive() else None
+            self.QTimer_Dict["Internet Sender Information"].stop() \
+                if self.QTimer_Dict["Internet Sender Information"].isActive() else None
             
             self.internet_Sender_Node = None
 
     def event_Sender_Information(self):
-        information = self.internet_Sender_Dict[
-            self.internet_Sender_Node
-        ].get_Information()
-        
-        self.QTFunction_Caller_Event_Add([
-            self.label_Sender_Is_Connection_Ok.setText,
-            [f"{information['is_connection_ok']}"]
-        ])
-        
-        self.QTFunction_Caller_Event_Add([
-            self.label_Sender_Is_Set_Blocking.setText,
-            [f"{information['set_blocking']}"]
-        ])
+        if self.internet_Sender_Node is not None:
+            information = self.internet_Sender_Dict[
+                self.internet_Sender_Node
+            ].get_Information()
+            
+            self.QTFunction_Caller_Event_Add([
+                self.label_Sender_Is_Connection_Ok.setText,
+                [f"{information['is_connection_ok']}"]
+            ])
+            
+            self.QTFunction_Caller_Event_Add([
+                self.label_Sender_Is_Set_Blocking.setText,
+                [f"{information['set_blocking']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Sender_Timeout.setText,
-            [f"{information['timeout']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Sender_Timeout.setText,
+                [f"{information['timeout']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Sender_Data_Last_Sended.setText,
-            [f"{information['data_Last_Sended']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Sender_Data_Last_Sended.setText,
+                [f"{information['data_Last_Sended']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Sender_Buffer_Length.setText,
-            [f"{information['buffer_Length']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Sender_Buffer_Length.setText,
+                [f"{information['buffer_Length']}"]
+            ])
 
-        # self.QTFunction_Caller_Event_Add([
-        #     self.label_Sender_Buffer_Max_Length.setText,
-        #     [f"{information['buffer_Max_Length']}"]
-        # ])
+            # self.QTFunction_Caller_Event_Add([
+            #     self.label_Sender_Buffer_Max_Length.setText,
+            #     [f"{information['buffer_Max_Length']}"]
+            # ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.get_Sender_Buffer,
-            []
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.get_Sender_Buffer,
+                []
+            ])
         
     def get_Sender_Buffer(self):
-        self.listWidget_Sender_Buffer.clear()
-        bulk_buffer = self.internet_Sender_Dict[
-            self.internet_Sender_Node
-        ].buffer_Get_Bulk(start=0, end=0)
-        # print("bulk_buffer:", bulk_buffer)
-        item_list = list()
-        if bulk_buffer is not None:
-            for buffer_item in bulk_buffer:
-                self.qt_Priority()
-                item_list.append(
-                    buffer_item
-                    # list_Widget_Item(
-                    #     title=buffer_item
-                    # )
+        # bulk_buffer = self.internet_Sender_Dict[
+        #     self.internet_Sender_Node
+        # ].buffer_Get_Bulk(start=0, end=0)
+        # item_list = list()
+        # if bulk_buffer is not None:
+        #     for buffer_item in bulk_buffer:
+        #         self.qt_Priority()
+        #         item_list.append(
+        #             buffer_item
+        #             # list_Widget_Item(
+        #             #     title=buffer_item
+        #             # )
+        #         )
+        # self.listWidget_Sender_Buffer.clear()
+        # self.listWidget_Sender_Buffer.addItems(
+        #     item_list
+        # )
+        # item_list = [buffer_item for buffer_item in bulk_buffer]
+        if self.internet_Sender_Node is not None:
+            bulk_buffer = self.internet_Sender_Dict[
+                self.internet_Sender_Node
+            ].buffer_Get_Bulk(start=0, end=0)
+            self.listWidget_Sender_Buffer.clear()
+            if bulk_buffer is not None:
+                self.listWidget_Sender_Buffer.addItems(
+                    bulk_buffer
                 )
-        self.listWidget_Sender_Buffer.addItems(
-            item_list
-        )
-    
+
     def init_Receiver_Internet_Object(
         self,
         ip_receiver="127.0.0.1",
@@ -381,17 +399,17 @@ class Ui_ISR(Structure_Ui_Camera):
             disable_Logger=False
         )
         self.internet_Receiver_Dict[self.internet_Receiver_Node].action_After_Receive = \
-            lambda data: [
+            lambda address, data: [
             # self.internet_Sender_Dict[self.internet_Sender_Node].buffer_Append(f"'{data}' Received!!!", False),
             # print("Data received:", data),
             self.buffer_Receiver_Set(
-                "|-> " + str(data) + "\n"
+                f"|-[{address}]-> " + str(data) + "\n"
             ) if data is not None else None
         ]
         self.QTimer_Dict["Internet Receiver Information"] = qtimer_Create_And_Run(
             self,
             connection=self.event_Receiver_Information,
-            delay=500,
+            delay=100,
             is_needed_start=True,
             is_single_shot=False
         )
@@ -399,75 +417,93 @@ class Ui_ISR(Structure_Ui_Camera):
     def stop_Receiver_Internet_Object(self):
         if self.internet_Receiver_Node is not None:
             self.internet_Receiver_Dict[self.internet_Receiver_Node].quit()
-            self.QTimer_Dict["Internet Receiver Information"].stop(
-            ) if self.QTimer_Dict["Internet Receiver Information"].isActive() else None
+            self.QTimer_Dict["Internet Receiver Information"].stop() \
+                if self.QTimer_Dict["Internet Receiver Information"].isActive() else None
             
             self.internet_Receiver_Node = None
         
     def event_Receiver_Information(self):
-        information = self.internet_Receiver_Dict[
-            self.internet_Receiver_Node
-        ].get_Information()
+        if self.internet_Receiver_Node is not None:
+            information = self.internet_Receiver_Dict[
+                self.internet_Receiver_Node
+            ].get_Information()
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Is_Connection_Ok.setText,
-            [f"{information['is_connection_ok']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Is_Connection_Ok.setText,
+                [f"{information['is_connection_ok']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Is_Set_Blocking.setText,
-            [f"{information['set_blocking']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Is_Set_Blocking.setText,
+                [f"{information['set_blocking']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Timeout.setText,
-            [f"{information['timeout']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Timeout.setText,
+                [f"{information['timeout']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Address_Last.setText,
-            [f"{information['address_Last']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Address_Last.setText,
+                [f"{information['address_Last']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Data_Received.setText,
-            [f"{information['data_Received']}"]
-        ])
-        if information['data_Received']:
-            print(
-                "information['data_Received']:",
-                information['data_Received']
-            )
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Data_Received.setText,
+                [f"{information['data_Received']}"]
+            ])
+            
+            # TODO: Need to see lively last received any info at connection
+            # For Debug
+            if information['data_Received']:
+                print(
+                    "information['data_Received']:",
+                    information['data_Received']
+                )
 
-        self.QTFunction_Caller_Event_Add([
-            self.label_Receiver_Data_Last_Received.setText,
-            [f"{information['data_Last_Received']}"]
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Data_Last_Received.setText,
+                [f"{information['data_Last_Received']}"]
+            ])
 
-        self.QTFunction_Caller_Event_Add([
-            self.get_Receiver_Buffer,
-            []
-        ])
+            self.QTFunction_Caller_Event_Add([
+                self.label_Receiver_Buffer_Length.setText,
+                [f"{information['buffer_Length']}"]
+            ])
+
+            self.QTFunction_Caller_Event_Add([
+                self.get_Receiver_Buffer,
+                []
+            ])
 
     def get_Receiver_Buffer(self):
-        self.listWidget_Receiver_Buffer.clear()
-        bulk_buffer = self.internet_Receiver_Dict[
-            self.internet_Receiver_Node
-        ].buffer_Get_Bulk(start=0, end=0)
-        # print("bulk_buffer:", bulk_buffer)
-        item_list = list()
-        if bulk_buffer is not None:
-            for buffer_item in bulk_buffer:
-                self.qt_Priority()
-                item_list.append(
-                    buffer_item
-                    # list_Widget_Item(
-                    #     title=buffer_item
-                    # )
+        # bulk_buffer = self.internet_Receiver_Dict[
+        #     self.internet_Receiver_Node
+        # ].buffer_Get_Bulk(start=0, end=0)
+        # item_list = list()
+        # if bulk_buffer is not None:
+        #     for buffer_item in bulk_buffer:
+        #         self.qt_Priority()
+        #         item_list.append(
+        #             buffer_item
+        #             # list_Widget_Item(
+        #             #     title=buffer_item
+        #             # )
+        #         )
+        # self.listWidget_Receiver_Buffer.clear()
+        # self.listWidget_Receiver_Buffer.addItems(
+        #     item_list
+        # )
+
+        if self.internet_Receiver_Node is not None:
+            bulk_buffer = self.internet_Receiver_Dict[
+                self.internet_Receiver_Node
+            ].buffer_Get_Bulk(start=0, end=0)
+            self.listWidget_Receiver_Buffer.clear()
+            if bulk_buffer is not None:
+                self.listWidget_Receiver_Buffer.addItems(
+                    bulk_buffer
                 )
-        self.listWidget_Receiver_Buffer.addItems(
-            item_list
-        )
 
     def init_Internet_Objects(
         self,
