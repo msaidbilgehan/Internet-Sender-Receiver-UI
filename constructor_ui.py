@@ -540,11 +540,15 @@ class Ui_ISR(Structure_Ui_Camera):
         )
 
     def buffer_Receiver_Set(self, data):
-        # self.internet_Receiver_Buffer = data
+        # self.QTFunction_Caller_Event_Add([
+        #     self.textEdit_Receiver_Output.setText,
+        #     [self.textEdit_Receiver_Output.toPlainText() + f"{data}"]
+        # ])
         self.QTFunction_Caller_Event_Add([
             self.textEdit_Receiver_Output.setText,
             [f"{data}"]
         ])
+        
 
     def buffer_Sender_Set(self, data, lock_until_done=False):
         if self.internet_Sender_Dict.get(self.internet_Sender_Node) is not None and data != "":
