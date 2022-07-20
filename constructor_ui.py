@@ -33,7 +33,6 @@ class Ui_ISR(Structure_Ui_Camera):
         ### ### ### ### ###
         self.init()
         self.configure_Button_Connections()
-        self.configure_Other_Settings()
         self.init_QTimers()
 
         # self.QTimer_Dict["debug"] = qtimer_Create_And_Run(
