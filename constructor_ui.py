@@ -22,7 +22,7 @@ class Ui_ISR(Structure_Ui_Camera):
         super(Ui_ISR, self).__init__(*args, **kwargs)
 
         ### ### ### ### ###
-        ### Constractor ###
+        ### Constructor ###
         ### ### ### ### ###
         self.logger_level = logger_level
         self.__thread_Dict = dict()
@@ -32,6 +32,28 @@ class Ui_ISR(Structure_Ui_Camera):
         ### ### Init ### ##
         ### ### ### ### ###
         self.init()
+        self.configure_Button_Connections()
+        self.configure_Other_Settings()
+        self.init_QTimers()
+
+        # self.QTimer_Dict["debug"] = qtimer_Create_And_Run(
+        #     self,
+        #     connection=lambda: [
+        #         print(
+        #             "Receiver:::", self.internet_Receiver_Dict[self.internet_Receiver_Node].get_Information()[
+        #                 "is_connection_ok"
+        #             ]
+        #         ) if self.internet_Receiver_Node is not None else None,
+        #         print(
+        #             "Sender:::", self.internet_Sender_Dict[self.internet_Sender_Node].get_Information()[
+        #                 "is_connection_ok"
+        #             ]
+        #         ) if self.internet_Sender_Node is not None else None
+        #     ],
+        #     delay=50,
+        #     is_needed_start=True,
+        #     is_single_shot=False
+        # )
 
 
     ### ### ## ### ###
@@ -287,7 +309,7 @@ class Ui_ISR(Structure_Ui_Camera):
         self.QTimer_Dict["Internet Sender Information"] = qtimer_Create_And_Run(
             self,
             connection=self.event_Sender_Information,
-            delay=100,
+            delay=50,
             is_needed_start=True,
             is_single_shot=False
         )
@@ -409,7 +431,7 @@ class Ui_ISR(Structure_Ui_Camera):
         self.QTimer_Dict["Internet Receiver Information"] = qtimer_Create_And_Run(
             self,
             connection=self.event_Receiver_Information,
-            delay=100,
+            delay=50,
             is_needed_start=True,
             is_single_shot=False
         )
@@ -562,6 +584,8 @@ class Ui_ISR(Structure_Ui_Camera):
         super(Ui_ISR, self).closeEvent(*args, **kwargs)
 
         self.camera_Remove()
+
+
 
 if __name__ == "__main__":
     # title, Class_UI, run=True, UI_File_Path= "test.ui", qss_File_Path = ""
