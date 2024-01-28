@@ -32,10 +32,10 @@ LOGGER_LEVEL = 0  # 0, 1, 2, 3, 4
 
 
 if __name__ == "__main__":
-    
+
     title = TITLE
     Class_UI = Ui_ISR
-    UI_File_Path = "ISR_UI.ui"
+    UI_File_Path = libs.working_dir + "ISR_UI.ui"
     show_UI=True
     is_Maximized = False
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     #     delay=0.0000001
     # )
-    
+
     run_UI(
         app=app,
         UI=ui,
